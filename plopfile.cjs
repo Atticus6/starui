@@ -61,6 +61,16 @@ module.exports = function main(plop) {
             return true;
           },
         },
+        ...(gen === "component"
+          ? [
+              {
+                type: "list",
+                name: "type",
+                message: "请选择组件类型:",
+                choices: ["tsx", "sfc"],
+              },
+            ]
+          : []),
         {
           type: "input",
           name: "description",
@@ -85,9 +95,9 @@ module.exports = function main(plop) {
         const actions = [];
 
         if (!answers) return actions;
-        console.log("answers", answers);
+        console.log("answers", answers, gen);
 
-        const { description, outDir } = answers;
+        const { description, outDir, type } = answers;
         const generatorName = answers[`${gen}Name`] ?? "";
 
         const data = {
@@ -96,13 +106,17 @@ module.exports = function main(plop) {
           outDir,
         };
 
-        console.log(data);
+        let cmpType = "";
+        if (type && type.length !== 0) {
+          cmpType = "-" + type;
+        }
+        console.log("cmpType", gen + cmpType);
 
         actions.push({
           type: "addMany",
-          templateFiles: `plop/${gen}/**`,
+          templateFiles: `plop/${gen + cmpType}/**`,
           destination: `./packages/{{outDir}}/{{dashCase ${gen}Name}}`,
-          base: `plop/${gen}`,
+          base: `plop/${gen + cmpType}`,
           data,
           abortOnFail: true,
         });

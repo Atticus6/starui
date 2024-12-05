@@ -1,5 +1,5 @@
 import { withInstall } from "@starui/utils";
-import Input from "./input";
+import Input from "./input.vue";
 
 
 export const StInput = withInstall(Input);
