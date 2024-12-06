@@ -8,7 +8,8 @@
     "dev:docs": "pnpm --filter @starui/docs dev",
     "docs:build": "pnpm --filter @starui/docs build",
     "docs:preview": "pnpm --filter @starui/docs preview",
-    "create:cmp": "plop component"
+    "create:cmp": "plop component",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "@vitejs/plugin-vue-jsx": "^3.1.0",
     "@vue/tsconfig": "^0.5.1",
+    "jsdom": "^25.0.1",
     "plop": "^4.0.1",
     "postcss-color-mix": "^1.1.0",
     "postcss-each": "^1.1.0",
