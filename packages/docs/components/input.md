@@ -1,6 +1,8 @@
 ---
 title: Input
-description: Input 组件文档
+description: 很棒的输入框
+author: wanglt
+contributors:  []
 ---
 
 # Input 

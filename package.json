@@ -9,6 +9,7 @@
     "docs:build": "pnpm --filter @starui/docs build",
     "docs:preview": "pnpm --filter @starui/docs preview",
     "create:cmp": "plop component",
+    "create:util": "plop util",
     "test": "vitest"
   },
   "keywords": [],

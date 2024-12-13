@@ -1,21 +1,14 @@
-/**
- * Part of this code is taken from @chakra-ui/react package ❤️
- */
+const { execSync } = require("child_process");
+const fs = require("fs");
+const path = require("path");
 
-const capitalize = (str) => {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-};
-
-const camelCase = (str) => {
-  return str.replace(/[-_](\w)/g, (_, c) => c.toUpperCase());
-};
-
-const workspaces = ["components", "hooks"];
-const generators = ["component", "hook"];
+const workspaces = ["components", "utils", "hooks"];
+const generators = ["component", "util", "hook"];
 
 const defaultOutDirs = {
   component: "components",
   hook: "hooks",
+  util: "utils",
 };
 
 /**
@@ -99,11 +92,15 @@ module.exports = function main(plop) {
 
         const { description, outDir, type } = answers;
         const generatorName = answers[`${gen}Name`] ?? "";
+        const user = getGitUser();
 
         const data = {
           [`${gen}Name`]: generatorName,
           description,
           outDir,
+          username: user.name,
+          email: user.email,
+          createAt: new Date().toISOString().split("T")[0],
         };
 
         let cmpType = "";
@@ -148,8 +145,63 @@ module.exports = function main(plop) {
             abortOnFail: true,
           });
         }
+
+        if (gen === "util") {
+          actions.push({
+            type: "append",
+            path: "./packages/utils/index.ts",
+            pattern: /$/g, // 匹配文件的末尾
+            template: "export * from './{{utilName}}'",
+          });
+        }
         return actions;
       },
     });
   });
+};
+
+// 工具函数
+function getGitUser() {
+  try {
+    const name = execSync("git config user.name", { encoding: "utf-8" }).trim();
+    const email = execSync("git config user.email", {
+      encoding: "utf-8",
+    }).trim();
+    const contributorsPath = path.resolve(__dirname, "contributors.json");
+    let contributors = [];
+    if (fs.existsSync(contributorsPath)) {
+      contributors = JSON.parse(fs.readFileSync(contributorsPath, "utf-8"));
+    }
+    const existingContributor = contributors.find(
+      (contributor) => contributor.name === name || contributor.email === email
+    );
+    if (!existingContributor) {
+      contributors.push({
+        name,
+        email,
+        contributions: 1,
+        avatar: "",
+      });
+    } else {
+      existingContributor.contributions =
+        (existingContributor.contributions || 0) + 1;
+    }
+    fs.writeFileSync(
+      contributorsPath,
+      JSON.stringify(contributors, null, 2),
+      "utf-8"
+    );
+    return { name, email };
+  } catch (error) {
+    console.error("Failed to get Git user:", error.message);
+    return { user: "", email: "" };
+  }
+}
+
+const capitalize = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+const camelCase = (str) => {
+  return str.replace(/[-_](\w)/g, (_, c) => c.toUpperCase());
 };

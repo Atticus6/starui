@@ -5,8 +5,10 @@ import {
   componentPreview,
 } from "@vitepress-demo-preview/plugin";
 import { readdirSync } from "fs";
-
+import Components from "unplugin-vue-components/vite";
 import { join, basename, extname } from "path";
+import { resolve } from "node:path";
+import { MarkdownTransform } from "./plugins/markdownTransform";
 function getFilesInDirectory(directoryPath: string) {
   try {
     const files = readdirSync(directoryPath); // 同步读取文件夹内容
@@ -40,24 +42,39 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: "首页", link: "/" },
-      { text: "组件", link: "/markdown-examples" },
+      { text: "组件", link: "/components" },
+      { text: "工具函数", link: "/utils" },
     ],
-
-    sidebar: [
-      {
-        text: "组件",
-        items: sortFilenames(
-          extractFileNames(getFilesInDirectory("./components"))
-        ).map((text) => ({
-          text: text === "index" ? "介绍" : text,
-          link: `/components/${text}`,
-        })),
-        // items: [
-        //   { text: "Markdown Examples", link: "/markdown-examples" },
-        //   { text: "Runtime API Examples", link: "/api-examples" },
-        // ],
-      },
-    ],
+    search: {
+      provider: "local",
+    },
+    sidebar: {
+      components: [
+        {
+          text: "组件",
+          items: sortFilenames(
+            extractFileNames(getFilesInDirectory("./components"))
+          ).map((text) => ({
+            text: text === "index" ? "介绍" : text,
+            link: `/components/${text}`,
+          })),
+          // items: [
+          //   { text: "Markdown Examples", link: "/markdown-examples" },
+          // ],
+        },
+      ],
+      utils: [
+        {
+          text: "工具函数",
+          items: sortFilenames(
+            extractFileNames(getFilesInDirectory("./utils"))
+          ).map((text) => ({
+            text: text === "index" ? "介绍" : text,
+            link: `/utils/${text}`,
+          })),
+        },
+      ],
+    },
 
     socialLinks: [
       { icon: "github", link: "https://github.com/vuejs/vitepress" },
@@ -70,6 +87,16 @@ export default defineConfig({
     },
   },
   vite: {
-    plugins: [vueJsx()],
+    plugins: [
+      vueJsx(),
+      Components({
+        dirs: resolve(__dirname, "./theme/components"),
+        include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+
+        dts: "./.vitepress/components.d.ts",
+        transformer: "vue3",
+      }),
+      MarkdownTransform(),
+    ],
   },
 });

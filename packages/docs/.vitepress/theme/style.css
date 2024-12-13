@@ -1,0 +1,15 @@
+.VPTeamMembers .container .item {
+  max-width: 200px;
+}
+
+.VPTeamMembers {
+  display: flex;
+  justify-content: center;
+}
+
+.VPTeamMembers .container {
+  display: flex;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}

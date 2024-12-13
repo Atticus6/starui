@@ -22,3 +22,31 @@ features:
     title: 文档和示例丰富
     details: 在线文档包含详细的组件文档和示例，以展示你的组件库的功能和使用方法。提供清晰的示例代码、演示和解释，帮助用户理解每个组件的用途、属性和事件，并能够快速集成到他们的项目中。
 ---
+
+<script setup>
+import {
+  VPTeamPage,
+  VPTeamPageTitle,
+  VPTeamMembers
+} from 'vitepress/theme';
+import contributors from '../../contributors.json'
+
+
+const members = contributors.map(item=>({
+    avatar: item.avatar,
+    name: item.name,
+}))
+
+</script>
+
+<VPTeamPage>
+  <VPTeamPageTitle>
+    <template #title>
+      核心成员介绍
+    </template>
+  </VPTeamPageTitle>
+  <VPTeamMembers
+    :members="members"
+  />
+</VPTeamPage>
+<HomeContributors/>
